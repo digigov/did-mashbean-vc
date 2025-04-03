@@ -14,8 +14,8 @@ router.post('/generateVC', function(req, res, next) {
 
   // Build VC data payload
   const payload = {
-    vcId: config.vc.id,
-    vcCid: config.vc.cid,
+    vcId: config.vcId,
+    vcCid: config.vcCid,
     fields: [
       {
         type: "NORMAL",
@@ -42,7 +42,7 @@ router.post('/generateVC', function(req, res, next) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': '*/*',
-      'Access-Token': config.vc.apiKey
+      'Access-Token': config.apiKey
     }
   };
 

@@ -7,11 +7,23 @@
    - 系統會寄送開通信件(約需等待數分鐘)
    - 目前測試階段一般帳號即可，進階帳號功能暫時未知
    - 完成後可取得 access token
+   - 若註冊時未取得 access token，可從以下位置重新取得：
+     - 登入發行或驗證後台
+     - 點選右上角頭像選單
+     - 選擇「換發 access token」功能
+   ![取得 access token 位置](./images/guide_accesstoken.png)
+
+
 
 2. 建立 VC 樣板
    - 登入發行後台(https://issuer-sandbox.wallet.gov.tw/)建立卡片樣板
+     ![建立 VC 樣板](./guide/vc_create.png)
+
    - 設定欄位清單及卡面圖片
    - 取得卡片序號(vcId)及樣板代號(vcCid)
+     ![點及詳細資料](./guide/apply-vc1.png)
+     ![取得序號跟樣板代號](./guide/apply-vc2.png)
+
 
 3. 系統整合
    - 在自有系統中設定檢驗規則
@@ -47,4 +59,23 @@
    ```
 
 服務啟動後即可開始測試發行卡片功能。
+
+
+
+
+## 作者
+
+本範例專案由 tonyq (tonylovejava@gmail.com) 賺寫。
+
+
+## License
+
+本專案採用 MIT License 授權。
+
+您可以自由地：
+- 使用、複製及散布本軟體
+- 修改本軟體並散布修改後的版本
+- 將本軟體或其修改後的版本用於商業用途
+
+詳細授權內容請參閱 [MIT License](https://opensource.org/licenses/MIT)。
 
