@@ -79,7 +79,7 @@ http://mashbeanvc.tonyq.org/
 
 ## 作者
 
-本範例專案由 tonyq (tonylovejava@gmail.com) 賺寫。
+本範例專案由 tonyq (tonylovejava@gmail.com) 撰寫。
 
 
 ## License
