@@ -49,7 +49,10 @@ block content
           .card.border-info.mb-4
             .card-body
               - var maxCount = Math.max(...Object.values(checkinRank))
-              each count, name in checkinRank
+              - var sortedRank = Object.entries(checkinRank).sort((a, b) => b[1] - a[1])
+              each entry in sortedRank
+                - var name = entry[0]
+                - var count = entry[1]
                 .d-flex.align-items-center.mb-2
                   if count === maxCount
                     i.fas.fa-crown.text-warning.me-2

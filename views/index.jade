@@ -83,7 +83,7 @@ block content
 
           form.mx-auto(style="max-width: 480px" action="/generateVC" method="POST")
             .mb-3
-              label.form-label(for="nickname") 暱稱：(請勿使用標點符號或特殊符號，僅限中文、英文、底線)
+              label.form-label(for="nickname") 暱稱：(請勿使用標點符號或特殊符號，僅限中文、英文、數字、底線)
               input#nickname.form-control(type="text" name="nickname" pattern="[a-zA-Z\u4e00-\u9fa5_]+" title="請勿使用標點符號或特殊符號，僅限中文、英文、底線" required)
             
             .mb-3
