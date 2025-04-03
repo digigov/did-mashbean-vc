@@ -1,0 +1,176 @@
+extends layout
+
+block content
+
+  if status === 'success'
+    .alert.alert-success.alert-dismissible.fade.show.mb-4(role="alert")
+      i.fas.fa-check-circle.me-2
+      | 已成功幫豆泥點蠟
+      button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
+  h1.text-center 幫豆泥點蠟
+  img.img-fluid.mx-auto.d-block.rounded.mb-4(src="/images/avatar.jpg" alt="Avatar" style="max-width: 200px")
+
+  ul.nav.nav-tabs.mb-4
+    li.nav-item
+      a.nav-link(href="/") 申請豆泥卡(發行)
+    li.nav-item  
+      a.nav-link.active(href="/checkin") 幫豆泥點蠟(驗證)
+
+  .card.mb-4.shadow-sm
+    .card-body
+      .alert.alert-primary.mb-4
+        h3.h5.fw-bold.mb-3 幫豆泥點蠟活動說明
+        p.text-secondary
+          | 每個人都可以幫豆泥點一根蠟燭，每根蠟燭都能為豆泥增添一分活力！
+        .card.mt-3
+          .card-body
+            h4.h6.fw-bold.mb-2 活動規則
+            ul.text-secondary
+              li.mb-2 可以重複點蠟，為豆泥加油打氣
+              li.mb-2 每根蠟燭可以為豆泥增加一點活力值
+              li.mb-2 需要使用數位皮夾App掃描驗證
+              li.mb-2 點蠟後可以在下方留言打氣
+
+      .card.bg-light
+        .card-body
+          h3.h5.fw-bold.mb-3.d-flex.align-items-center
+            span.badge.bg-warning.rounded-circle.me-2.p-2 一
+            | 點蠟情形
+
+          .text-center.mb-4
+            .alert.alert-success.mt-3
+              i.fas.fa-fire.me-2
+              | 目前豆泥活力值：
+              span.fw-bold #{checkinCount} 點
+
+          h3.h5.fw-bold.mb-3.d-flex.align-items-center
+            span.badge.bg-info.rounded-circle.me-2.p-2 二
+            | 點蠟排行榜
+          
+          .card.border-info.mb-4
+            .card-body
+              - var maxCount = Math.max(...Object.values(checkinRank))
+              each count, name in checkinRank
+                .d-flex.align-items-center.mb-2
+                  if count === maxCount
+                    i.fas.fa-crown.text-warning.me-2
+                  else if count >= 10
+                    i.fas.fa-star.text-success.me-2  
+                  else if count >= 5
+                    i.fas.fa-heart.text-info.me-2
+                  else
+                    i.fas.fa-smile.text-primary.me-2
+                  
+                  span.fw-bold.me-2= name
+                  span.badge(class=count >= 10 ? 'bg-success' : count >= 5 ? 'bg-info' : 'bg-primary')
+                    | #{count} 次
+
+          h3.h5.fw-bold.mb-3.d-flex.align-items-center
+            span.badge.bg-success.rounded-circle.me-2.p-2 三
+            | 留言點蠟
+
+          .mb-4
+            form#checkinForm.mx-auto(style="max-width: 480px")
+              .mb-3
+                textarea#message.form-control(rows="3" placeholder="在此輸入打氣訊息..." required)
+              button#submitBtn.btn.btn-warning.w-100(type="submit") 
+                i.fas.fa-heart.me-2
+                | 為豆泥加油
+              #qrcodeContainer.text-center.mt-3(style="display:none")
+                img#qrcode.img-fluid.mb-2
+                p.text-muted.small 請使用數位皮夾掃描QR Code進行驗證
+              
+            script.
+              const form = document.getElementById('checkinForm');
+              const qrcodeContainer = document.getElementById('qrcodeContainer');
+              const qrcodeImg = document.getElementById('qrcode');
+              let pollingInterval;
+              let currentTransactionId;
+              
+              form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = document.getElementById('message').value;
+                
+                try {
+                  const response = await fetch('/getQRCode', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                  });
+                  
+                  if (!response.ok) throw new Error('Failed to get QR code');
+                  
+                  const data = await response.json();
+                  currentTransactionId = data.transaction_id;
+                  qrcodeImg.src = data.qrcode;
+                  qrcodeContainer.style.display = 'block';
+                  document.getElementById('message').readOnly = true;
+                  document.getElementById('submitBtn').innerHTML = '<i class="fas fa-undo me-2"></i>取消重新留言';
+                  
+                  // Start polling for results every 5 seconds
+                  pollingInterval = setInterval(async () => {
+                    try {
+                      const pollResponse = await fetch('/checkStatus', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ transaction_id: currentTransactionId })
+                      });
+                      
+                      if (pollResponse.ok) {
+                        const result = await pollResponse.json();
+                        if (result.verified) {
+                          clearInterval(pollingInterval);
+                          window.location.href = window.location.pathname + '?status=success';
+                        }
+                      }
+                    } catch (err) {
+                      console.error('Polling error:', err);
+                    }
+                  }, 5000);
+
+                  document.getElementById('submitBtn').onclick = (e) => {
+                    e.preventDefault();
+                    clearInterval(pollingInterval);
+                    document.getElementById('message').value = '';
+                    document.getElementById('message').readOnly = false;
+                    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-heart me-2"></i>為豆泥加油';
+                    document.getElementById('submitBtn').onclick = null;
+                    qrcodeContainer.style.display = 'none';
+                  };
+                  
+                } catch (err) {
+                  console.error('Error:', err);
+                  alert('獲取QR碼時發生錯誤，請稍後再試');
+                }
+              });
+
+          h3.h5.fw-bold.mb-3.d-flex.align-items-center
+            span.badge.bg-danger.rounded-circle.me-2.p-2 四
+            | 最近打氣留言
+
+          .card.border-secondary
+            .card-body
+              - var recentCheckins = checkins.slice(-50).reverse()
+              each checkin in recentCheckins
+                .d-flex.align-items-start.mb-3
+                  i.fas.fa-comment.text-secondary.me-2.mt-1
+                  div
+                    .d-flex.align-items-center.mb-1
+                      span.fw-bold.me-2= checkin.nickname
+                      small.text-muted= checkin.timestamp
+                    p.mb-0= checkin.message
+
+
+  .alert.alert-light.mt-4
+    h4.h6.fw-bold.mb-2
+      i.fas.fa-info-circle.me-2
+      | 關於本系統
+    p.mb-2.text-secondary 本頁功能採用純 I/O 方式開發，請溫柔對待這頁勿做壓測 (遮臉)
+    p.mb-0.text-secondary
+      | 作者：
+      a(href="mailto:tonylovejava@gmail.com") tonyq
+      |  (tonylovejava@gmail.com)

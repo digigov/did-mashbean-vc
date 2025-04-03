@@ -10,8 +10,10 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "https": "^1.0.0",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
-    "tailwindcss": "^4.1.1"
+    "tailwindcss": "^4.1.1",
+    "uuid": "^11.1.0"
   }
 }
