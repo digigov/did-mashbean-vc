@@ -28,8 +28,7 @@ block content
             ul.text-secondary
               li.mb-2 可以重複點蠟，為豆泥加油打氣
               li.mb-2 每根蠟燭可以為豆泥增加一點活力值
-              li.mb-2 需要使用數位皮夾App掃描驗證
-              li.mb-2 點蠟後可以在下方留言打氣
+              li.mb-2 送出留言後需要使用數位皮夾App掃描驗證授權
 
       .card.bg-light
         .card-body
@@ -161,7 +160,7 @@ block content
                   div
                     .d-flex.align-items-center.mb-1
                       span.fw-bold.me-2= checkin.nickname
-                      small.text-muted= checkin.timestamp
+                      small.text-muted= new Date(new Date(checkin.timestamp).getTime() + 16*60*60*1000).toISOString().replace('T', ' ').slice(0, 19)
                     p.mb-0= checkin.message
 
 
