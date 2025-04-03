@@ -1,0 +1,71 @@
+extends layout
+
+block content
+  h1(style="text-align: center") 數位豆泥卡申請
+
+  img(src="/images/avatar.jpg" alt="Avatar" style="width: 100%; max-width: 200px; height: auto; margin: 0 auto 24px; display: block; border-radius: 8px")
+  div(style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 24px")
+    
+    div(style="margin-bottom: 32px; background: #f9fafb; padding: 24px; border-radius: 8px; border-left: 4px solid #3b82f6")
+      h3(style="font-size: 20px; font-weight: 600; margin-bottom: 16px") 關於數位部數位皮夾計畫
+      p(style="color: #374151; line-height: 1.6")
+        | 數位皮夾採用去中心化技術架構，以安全和隱私保護為核心，確保您的數位證件獲得可靠保護。
+      div(style="margin-top: 16px; background: white; padding: 16px; border-radius: 8px")
+        h4(style="font-weight: 500; margin-bottom: 8px") 計畫時程
+        ul(style="list-style-type: disc; padding-left: 20px; color: #374151")
+          li(style="margin-bottom: 8px") 2024年：完成規劃文件及APP功能架構
+          li(style="margin-bottom: 8px") 2025年：進行第一階段開發及沙盒測試
+          li(style="margin-bottom: 8px") 2026年：開始產品上線前測試
+        p(style="margin-top: 16px; font-size: 14px; color: #4b5563")
+          | 詳細資訊請參考 
+          a(href="https://www.wallet.gov.tw/news.html" target="_blank" style="color: #2563eb; text-decoration: none") 數位部網站(另開新視窗)
+
+    div(style="margin-bottom: 32px")
+      div(style="border-bottom: 1px solid #e5e7eb; padding-bottom: 32px")
+        h3(style="font-size: 20px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center")
+          div(style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-right: 12px; background: #fb923c; color: white; font-size: 18px; font-weight: 600; border-radius: 50%") 壹
+          | 下載數位皮夾測試版 App
+
+        div(style="background: #fefce8; border-radius: 8px; padding: 16px; margin-bottom: 24px")
+          p(style="color: #4b5563")
+            i(style="margin-right: 8px").fas.fa-info-circle
+            strong 注意事項：
+            br
+            | • iOS 用戶需先安裝 TestFlight 才能下載測試版本
+            br
+            | • Android 用戶需先加入測試成員名單才能下載
+
+        div(style="display: grid; grid-template-columns: 1fr; gap: 32px")
+          div(style="display: flex; flex-direction: column; align-items: center; background: #f9fafb; padding: 24px; border-radius: 8px")
+            h4(style="font-weight: 500; margin-bottom: 16px") Android 版本
+            img(style="width: 160px; height: 160px; margin-bottom: 16px" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://play.google.com/apps/testing/tw.gov.moda.diw" loading="lazy")
+            a(href="https://play.google.com/apps/testing/tw.gov.moda.diw")
+              img(style="width: 160px; margin-bottom: 8px" src="/images/googleplay.png" loading="lazy")
+            span(style="color: #4b5563; font-size: 14px") 支援 Android 10 以上
+
+          div(style="display: flex; flex-direction: column; align-items: center; background: #f9fafb; padding: 24px; border-radius: 8px")
+            h4(style="font-weight: 500; margin-bottom: 16px") iOS 版本
+            img(style="width: 160px; height: 160px; margin-bottom: 16px" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://testflight.apple.com/join/gxr3mQFj" loading="lazy")
+            a(href="https://testflight.apple.com/join/gxr3mQFj")
+              img(style="width: 160px; margin-bottom: 8px" src="/images/applestore.png" loading="lazy")
+            span(style="color: #4b5563; font-size: 14px") 支援 iOS 15.0 以上
+
+      div(style="background: #f9fafb; border-radius: 8px; padding: 32px")
+        h3(style="font-size: 20px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center")
+          div(style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-right: 12px; background: #fb923c; color: white; font-size: 18px; font-weight: 600; border-radius: 50%") 貳
+          | 取得數位豆泥卡
+
+        p(style="text-align: center; margin-bottom: 16px") 請填寫以下資訊以取得您的數位豆泥卡 QR Code
+
+        form(style="max-width: 480px; margin: 0 auto" action="/generateVC" method="POST")
+          div(style="margin-bottom: 16px")
+            label(style="display: block; color: #374151; margin-bottom: 8px" for="nickname") 暱稱：
+            input#nickname(style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px" type="text" name="nickname" required)
+          
+          div(style="margin-bottom: 16px")
+            label(style="display: block; color: #374151; margin-bottom: 8px" for="birthday") 生日：(選填)
+            input#birthday(style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px" type="date" name="birthday")
+            small(style="display: block; color: #6b7280; margin-top: 4px") 生日欄位可以不填寫，若填寫將會在數位豆泥卡上顯示
+          
+          button(style="width: 100%; background: #fb923c; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer" type="submit") 
+            | 取得數位豆泥卡 QR Code
