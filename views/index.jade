@@ -59,8 +59,8 @@ block content
 
         form(style="max-width: 480px; margin: 0 auto" action="/generateVC" method="POST")
           div(style="margin-bottom: 16px")
-            label(style="display: block; color: #374151; margin-bottom: 8px" for="nickname") 暱稱：
-            input#nickname(style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px" type="text" name="nickname" required)
+            label(style="display: block; color: #374151; margin-bottom: 8px" for="nickname") 暱稱：(請勿使用標點符號或特殊符號，僅限中文、英文、底線)
+            input#nickname(style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px" type="text" name="nickname" pattern="[a-zA-Z\u4e00-\u9fa5_]+" title="請勿使用標點符號或特殊符號，僅限中文、英文、底線" required)
           
           div(style="margin-bottom: 16px")
             label(style="display: block; color: #374151; margin-bottom: 8px" for="birthday") 生日：(選填)
