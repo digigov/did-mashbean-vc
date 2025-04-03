@@ -11,7 +11,7 @@
      - 登入發行或驗證後台
      - 點選右上角頭像選單
      - 選擇「換發 access token」功能
-   ![取得 access token 位置](./images/guide_accesstoken.png)
+   ![取得 access token 位置](./guide/access_token.jpg)
 
 
 
