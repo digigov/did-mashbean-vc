@@ -3,7 +3,8 @@ extends layout
 block content
 
   h1.text-center 幫豆泥點蠟
-  img.img-fluid.mx-auto.d-block.rounded.mb-4(src="/images/avatar.jpg" alt="Avatar" style="max-width: 200px")
+  - var candleLevel = Math.min(Math.floor(checkinCount / 50), 5) +1
+  img.img-fluid.mx-auto.d-block.rounded.mb-4(src="/images/avatar_candle_lvl_" + candleLevel + ".png" alt="Avatar" style="max-width: 200px")
 
   ul.nav.nav-tabs.mb-4
     li.nav-item

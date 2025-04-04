@@ -7,7 +7,18 @@ const https = require('https');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: '豆泥卡申請' });
+  let record;
+  try {
+    record = require('../record');
+  } catch (err) {
+    record = {
+      checkin_count: 0
+    };
+  }
+  res.render('index', { 
+    title: '豆泥卡申請',
+    checkinCount: record.checkin_count
+  });
 });
 
 router.get('/checkin', function(req, res, next) {
