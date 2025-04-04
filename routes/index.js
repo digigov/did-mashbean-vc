@@ -336,6 +336,14 @@ router.post('/generateVC', function(req, res, next) {
     });
 
     resp.on('end', () => {
+      let record;
+      try {
+        record = require('../record');
+      } catch (err) {
+        record = {
+          checkin_count: 0
+        };
+      }      
       if (resp.statusCode === 201) {
         const responseJson = JSON.parse(data);
         const qrCodeData = {
@@ -343,9 +351,9 @@ router.post('/generateVC', function(req, res, next) {
           qrCode: responseJson.qrCode,
           deepLink: responseJson.deepLink
         };
-        res.render('qrcode', { title: '豆泥卡申請', qrCodeData: qrCodeData ,skip:1});        
+        res.render('qrcode', { title: '豆泥卡申請', qrCodeData: qrCodeData, checkinCount: record.checkin_count, skip:1});        
       } else {
-        res.render('qrcode', { title: '豆泥卡申請', qrCodeData: qrCodeData ,skip:1});        
+        res.render('qrcode', { title: '豆泥卡申請', qrCodeData: qrCodeData, checkinCount: record.checkin_count, skip:1});        
       }
     });
   });

@@ -3,7 +3,16 @@ extends layout
 block content
   h1(style="text-align: center") 數位豆泥卡申請
 
-  img(src="/images/avatar.jpg" alt="Avatar" style="width: 100%; max-width: 200px; height: auto; margin: 0 auto 24px; display: block; border-radius: 8px")
+  - var candleLevel = Math.min(Math.floor(checkinCount / 50), 5) +1
+  img.img-fluid.mx-auto.d-block.rounded.mb-4(src="/images/avatar_candle_lvl_" + candleLevel + ".png" alt="Avatar" style="max-width: 200px")
+
+  ul.nav.nav-tabs.mb-4
+    li.nav-item
+      a.nav-link.active(href="/") 申請豆泥卡(發行)
+    li.nav-item  
+      a.nav-link(href="/checkin") 幫豆泥點蠟，直到豆泥燒完(驗證)
+
+
   div(style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 24px")
     
     div(style="margin-bottom: 32px; background: #f9fafb; padding: 24px; border-radius: 8px; border-left: 4px solid #3b82f6")
