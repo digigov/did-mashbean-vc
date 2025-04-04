@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-  h1.text-center 幫豆泥點蠟
+  h1.text-center 幫豆泥點蠟，直到豆泥燒完
   - var candleLevel = Math.min(Math.floor(checkinCount / 50), 5) +1
   img.img-fluid.mx-auto.d-block.rounded.mb-4(src="/images/avatar_candle_lvl_" + candleLevel + ".png" alt="Avatar" style="max-width: 200px")
 
@@ -10,7 +10,7 @@ block content
     li.nav-item
       a.nav-link(href="/") 申請豆泥卡(發行)
     li.nav-item  
-      a.nav-link.active(href="/checkin") 幫豆泥點蠟(驗證)
+      a.nav-link.active(href="/checkin") 幫豆泥點蠟，直到豆泥燒完(驗證)
 
   .card.mb-4.shadow-sm
     .card-body

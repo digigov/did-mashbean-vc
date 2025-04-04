@@ -44,7 +44,7 @@ router.get('/checkin', function(req, res, next) {
   
   // Pass record data to template
   const renderData = {
-    title: '幫豆泥點蠟',
+    title: '幫豆泥點蠟，直到豆泥燒完',
     checkins: record.checkin,
     checkinCount: record.checkin_count,
     checkinRank: record.checking_rank,
