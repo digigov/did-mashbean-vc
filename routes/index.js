@@ -57,23 +57,32 @@ router.post('/checkStatus', async function(req, res, next) {
   const transactionId = req.body.transaction_id;
   const record = require('../record');
   const checkin = record.pending_checkin[transactionId];
+  let status = "";
   if (checkin) {
     
     var verified = false;
     // Call verification API to check status
+    const config = require('../config');
     const options = {
       hostname: 'verifier-sandbox.wallet.gov.tw',
       path: `/api/oidvp/result?transaction_id=${transactionId}&response_code=%20`,
       method: 'GET',
       headers: {
         'accept': '*/*',
-        'access-token': 'WlcRhWcRTy3L8Cj4nA3lHiyqWf7yCNoT',
+        'access-token': config.verifier_accessToken,
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36'
       }
     };
 
     let name = "";
     verified = await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        apiReq.destroy();
+        status = "server-timeout";
+        resolve(false);
+      
+      }, 3000);
+
       const apiReq = https.request(options, (apiRes) => {
         let data = '';
         
@@ -82,6 +91,7 @@ router.post('/checkStatus', async function(req, res, next) {
         });
 
         apiRes.on('end', () => {
+          clearTimeout(timeout);
           try {
             const result = JSON.parse(data);
             if (result.code === 0 && result.verify_result === true) {
@@ -97,61 +107,70 @@ router.post('/checkStatus', async function(req, res, next) {
       });
 
       apiReq.on('error', (error) => {
+        clearTimeout(timeout);
         resolve(false);
       });
 
       apiReq.end();
     });
-
+    console.log('Verification result:', verified);
     // If verified, move checkin to main list and clean up old pending checkins
     if (verified) {
-      // Move verified checkin to main checkin list
-      record.checkin.push({
-        ...checkin,
-        nickname: name,
-        verified: true
-      });
+      try {
+        // Move verified checkin to main checkin list
+        record.checkin.push({
+          ...checkin,
+          nickname: name,
+          verified: true
+        });
 
-      // Remove any existing checkins with same transaction_id
-      // record.checkin = record.checkin.filter(c => c.transaction_id !== checkin.transaction_id);
-      // Remove any duplicate transaction_ids from checkin list
-      const seenTids = new Set();
-      record.checkin = record.checkin.filter(c => {
-        if (seenTids.has(c.transaction_id)) {
-          return false;
-        }
-        seenTids.add(c.transaction_id);
-        return true;
-      });
+        // Remove any existing checkins with same transaction_id
+        // record.checkin = record.checkin.filter(c => c.transaction_id !== checkin.transaction_id);
+        // Remove any duplicate transaction_ids from checkin list
+        const seenTids = new Set();
+        record.checkin = record.checkin.filter(c => {
+          if (seenTids.has(c.transaction_id)) {
+            return false;
+          }
+          seenTids.add(c.transaction_id);
+          return true;
+        });
 
-      // Remove old pending checkins (over 30 mins)
-      const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
-      for (const [tid, pending] of Object.entries(record.pending_checkin)) {
-        const checkinTime = new Date(pending.timestamp);
-        if (checkinTime < thirtyMinsAgo) {
-          delete record.pending_checkin[tid];
+        // Remove old pending checkins (over 30 mins)
+        const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
+        for (const [tid, pending] of Object.entries(record.pending_checkin)) {
+          const checkinTime = new Date(pending.timestamp);
+          if (checkinTime < thirtyMinsAgo) {
+            delete record.pending_checkin[tid];
+          }
         }
+
+        // Recalculate total count
+        record.checkin_count = record.checkin.length;
+
+        // Recalculate rank
+        const rankMap = {};
+        record.checkin.forEach(c => {
+          if (!rankMap[c.nickname]) {
+            rankMap[c.nickname] = 0;
+          }
+          rankMap[c.nickname]++;
+        });
+        record.checking_rank = rankMap;
+        
+        // Write updated record back to file
+        fs.writeFileSync('./record.js', `module.exports = ${JSON.stringify(record, null, 3)}`);
+
+        res.json({ verified: true });
+      } catch (err) {
+        console.error('Error updating record:', err);
+        res.status(500).json({ error: 'Failed to update record' });
       }
-
-      // Recalculate total count
-      record.checkin_count = record.checkin.length;
-
-      // Recalculate rank
-      const rankMap = {};
-      record.checkin.forEach(c => {
-        if (!rankMap[c.nickname]) {
-          rankMap[c.nickname] = 0;
-        }
-        rankMap[c.nickname]++;
-      });
-      record.checking_rank = rankMap;
-      // Write updated record back to file
-      fs.writeFileSync('./record.js', `module.exports = ${JSON.stringify(record, null, 3)}`);
-
-      res.json({ verified: true });
+    } else {
+      res.status(200).json({ error: status ?? 'Checkin not found' });
     }
   } else {
-    res.status(404).json({ error: 'Checkin not found' });
+    res.status(404).json({ error: status ?? 'Checkin not found' });
   }
 });
 

@@ -96,7 +96,7 @@ block content
               // Initialize page functionality when document is ready
               document.addEventListener('DOMContentLoaded', function() {
                 // Scroll to the section with "三" when hash is #message
-                if(window.location.hash === '#message') {
+                if((window.location.href+"").indexOf("status=success")!=-1) {
                   document.querySelector('#sucmsg').scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
@@ -155,11 +155,7 @@ block content
                         const result = await pollResponse.json();
                         if (result.verified) {
                           clearInterval(pollingInterval);
-                          if(window.location.href == window.location.pathname + '?status=success#message'){
-                            window.location.reload();
-                          }else{
-                            window.location.href = window.location.pathname + '?status=success#message';
-                          }
+                          window.location.href = window.location.pathname + '?status=success';
                         }
                       }
                     } catch (err) {
