@@ -2,11 +2,6 @@ extends layout
 
 block content
 
-  if status === 'success'
-    .alert.alert-success.alert-dismissible.fade.show.mb-4(role="alert")
-      i.fas.fa-check-circle.me-2
-      | 已成功幫豆泥點蠟
-      button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
   h1.text-center 幫豆泥點蠟
   img.img-fluid.mx-auto.d-block.rounded.mb-4(src="/images/avatar.jpg" alt="Avatar" style="max-width: 200px")
 
@@ -80,6 +75,7 @@ block content
               button#submitBtn.btn.btn-warning.w-100(type="submit") 
                 i.fas.fa-heart.me-2
                 | 為豆泥加油
+
               #qrcodeContainer.text-center.mt-3(style="display:none")
                 a#qrcodeLink(href="#")
                   img#qrcode.img-fluid.mb-2
@@ -88,8 +84,25 @@ block content
                   a#deeplink.btn.btn-primary(href="#")
                     i.fas.fa-mobile-alt.me-2
                     | 如果是用有裝數位皮夾的手機 請點這裡或QRCode 認證授權
-              
+                
+            if status === 'success'
+              br
+              #sucmsg.alert.alert-success.alert-dismissible.fade.show.mb-4(role="alert")
+                i.fas.fa-check-circle.me-2
+                | 已成功幫豆泥點蠟
+                button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
             script.
+              // Initialize page functionality when document is ready
+              document.addEventListener('DOMContentLoaded', function() {
+                // Scroll to the section with "三" when hash is #message
+                if(window.location.hash === '#message') {
+                  document.querySelector('#sucmsg').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }
+              });
+              
               const form = document.getElementById('checkinForm');
               const qrcodeContainer = document.getElementById('qrcodeContainer');
               const qrcodeImg = document.getElementById('qrcode');
@@ -99,8 +112,10 @@ block content
               form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const message = document.getElementById('message').value;
+
+                document.getElementById('submitBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>送出中 請稍後...';
+
                 // Scroll to QR code section after submit
-                qrcodeContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 try {
                   const response = await fetch('/getQRCode', {
                     method: 'POST',
@@ -121,6 +136,9 @@ block content
                   document.getElementById('message').readOnly = true;
                   document.getElementById('submitBtn').innerHTML = '<i class="fas fa-undo me-2"></i>取消重新留言';
                   
+
+                  document.getElementById('submitBtn').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
                   // Start polling for results every 5 seconds
                   pollingInterval = setInterval(async () => {
                     try {
@@ -136,7 +154,11 @@ block content
                         const result = await pollResponse.json();
                         if (result.verified) {
                           clearInterval(pollingInterval);
-                          window.location.href = window.location.pathname + '?status=success';
+                          if(window.location.href == window.location.pathname + '?status=success#message'){
+                            window.location.reload();
+                          }else{
+                            window.location.href = window.location.pathname + '?status=success#message';
+                          }
                         }
                       }
                     } catch (err) {
