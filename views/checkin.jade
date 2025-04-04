@@ -50,11 +50,14 @@ block content
             .card-body
               - var maxCount = Math.max(...Object.values(checkinRank))
               - var sortedRank = Object.entries(checkinRank).sort((a, b) => b[1] - a[1])
-              each entry in sortedRank
+              each entry, index in sortedRank
                 - var name = entry[0]
                 - var count = entry[1]
                 .d-flex.align-items-center.mb-2
-                  if count === maxCount
+                  span.badge.bg-secondary.me-2= index + 1
+                  if name === '成獵人'
+                    i.fas.fa-dragon.text-danger.me-2
+                  else if count === maxCount
                     i.fas.fa-crown.text-warning.me-2
                   else if count >= 10
                     i.fas.fa-star.text-success.me-2  
@@ -62,7 +65,6 @@ block content
                     i.fas.fa-heart.text-info.me-2
                   else
                     i.fas.fa-smile.text-primary.me-2
-                  
                   span.fw-bold.me-2= name
                   span.badge(class=count >= 10 ? 'bg-success' : count >= 5 ? 'bg-info' : 'bg-primary')
                     | #{count} 次
@@ -79,8 +81,13 @@ block content
                 i.fas.fa-heart.me-2
                 | 為豆泥加油
               #qrcodeContainer.text-center.mt-3(style="display:none")
-                img#qrcode.img-fluid.mb-2
+                a#qrcodeLink(href="#")
+                  img#qrcode.img-fluid.mb-2
                 p.text-muted.small 請使用數位皮夾掃描QR Code進行驗證
+                .mt-3
+                  a#deeplink.btn.btn-primary(href="#")
+                    i.fas.fa-mobile-alt.me-2
+                    | 如果是用有裝數位皮夾的手機 請點這裡或QRCode 認證授權
               
             script.
               const form = document.getElementById('checkinForm');
@@ -92,7 +99,8 @@ block content
               form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const message = document.getElementById('message').value;
-                
+                // Scroll to QR code section after submit
+                qrcodeContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 try {
                   const response = await fetch('/getQRCode', {
                     method: 'POST',
@@ -107,6 +115,8 @@ block content
                   const data = await response.json();
                   currentTransactionId = data.transaction_id;
                   qrcodeImg.src = data.qrcode;
+                  document.getElementById('qrcodeLink').href = data.auth_uri;
+                  document.getElementById('deeplink').href = data.auth_uri;
                   qrcodeContainer.style.display = 'block';
                   document.getElementById('message').readOnly = true;
                   document.getElementById('submitBtn').innerHTML = '<i class="fas fa-undo me-2"></i>取消重新留言';
@@ -156,13 +166,16 @@ block content
 
           .card.border-secondary
             .card-body
-              - var recentCheckins = checkins.slice(-50).reverse()
+              - var recentCheckins = checkins.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
               each checkin in recentCheckins
                 .d-flex.align-items-start.mb-3
                   i.fas.fa-comment.text-secondary.me-2.mt-1
                   div
                     .d-flex.align-items-center.mb-1
-                      span.fw-bold.me-2= checkin.nickname
+                      span.fw-bold.me-2
+                        if checkin.nickname === '成獵人'
+                          i.fas.fa-dragon.text-warning.me-1
+                        = checkin.nickname
                       small.text-muted= new Date(new Date(checkin.timestamp).getTime() + 16*60*60*1000).toISOString().replace('T', ' ').slice(0, 19)
                     p.mb-0= checkin.message
 

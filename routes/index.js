@@ -101,6 +101,18 @@ router.post('/checkStatus', async function(req, res, next) {
         verified: true
       });
 
+      // Remove any existing checkins with same transaction_id
+      // record.checkin = record.checkin.filter(c => c.transaction_id !== checkin.transaction_id);
+      // Remove any duplicate transaction_ids from checkin list
+      const seenTids = new Set();
+      record.checkin = record.checkin.filter(c => {
+        if (seenTids.has(c.transaction_id)) {
+          return false;
+        }
+        seenTids.add(c.transaction_id);
+        return true;
+      });
+
       // Remove old pending checkins (over 30 mins)
       const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
       for (const [tid, pending] of Object.entries(record.pending_checkin)) {
