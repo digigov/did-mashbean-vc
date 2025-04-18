@@ -3,8 +3,8 @@ extends layout
 block content
 
   h1.text-center 幫豆泥點蠟，直到豆泥燒完
-  - var candleLevel = (Math.floor(checkinCount / 50) % 7) + 1
-  - var round = Math.floor((checkinCount) / 350) + 1
+  - var candleLevel = (Math.floor(checkinCount / 50) % 11) + 1
+  - var round = Math.floor((checkinCount) / 550) + 1
   - var roundText = round > 1 ? `${round}週目 ` : ''
   img.img-fluid.mx-auto.d-block.rounded.mb-4(src="/images/avatar_candle_lvl_" + candleLevel + ".png" alt="Avatar" style="max-width: 200px")
   if round > 1
